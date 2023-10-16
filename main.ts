@@ -12,14 +12,19 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 
 export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
-
+	constructor(app: App, plugin: MyPlugin) {
+		super(app, plugin);
+		this.app = app;
+	}
 	async onload() {
 		await this.loadSettings();
+		// this.registerEvent(this.app.workspace.on('layout-change', this.renderCustomMarkers.bind(this)));
+		// this.registerEvent(this.app.workspace.on('active-leaf-change', this.renderCustomMarkers.bind(this)));
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
+			new Notice('yelan niubi');
 		});
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
@@ -71,13 +76,36 @@ export default class MyPlugin extends Plugin {
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
 		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
+			const path = evt.targetNode?.parentElement?.dataset.path
+			if (path === "03-项目/031-用友需求经历") {
+				const filesInDirectory = this.app.vault.getFiles().filter((file) => {
+					return file.path.startsWith(path);
+				});
+				console.log("找到文件", filesInDirectory);
+
+			}
+			console.log('click', evt, path);
 		});
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
+	 // 渲染自定义标识
+	 renderCustomMarkers() {
+		const activeView = this.app.workspace.getActiveFile();
+		console.log(activeView)
+		// const fileList = document.querySelectorAll('.tree-item-inner.nav-file-title-content');
+        // fileList.forEach((file) => {
+        //     // const filePath = file.getAttribute('data-file-path');
+		// 	file.innerHTML = `<span class="custom-marker">hello</span> ${file.textContent}`;
 
+        //     // const obsidianFile = this.app.metadataCache.getFirstLinkpathDest(filePath, '');
+        //     // if (obsidianFile && obsidianFile.frontmatter && obsidianFile.frontmatter['marker']) {
+        //     //     const marker = obsidianFile.frontmatter['marker'];
+        //     //     file.innerHTML = `<span class="custom-marker">${marker}</span> ${file.textContent}`;
+        //     // }
+        // });
+    }
 	onunload() {
 
 	}
