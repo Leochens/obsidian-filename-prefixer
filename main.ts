@@ -81,7 +81,19 @@ export default class MyPlugin extends Plugin {
 				const filesInDirectory = this.app.vault.getFiles().filter((file) => {
 					return file.path.startsWith(path);
 				});
-				console.log("找到文件", filesInDirectory);
+				// console.log(res)
+				filesInDirectory.forEach(file => {
+					const matter = this.app.metadataCache.getFileCache(file)?.frontmatter || {};
+					if (file){
+						const isDone = matter['是否完成'];
+						console.log(isDone)
+						const el =  document.querySelector(`div[data-path="${file.path}"]`)
+						if(el){
+							el.textContent = `${isDone?'✅':'🕐'}${file.name}`
+						}
+					}
+				})
+				// console.log("找到文件", frontmatters);
 
 			}
 			console.log('click', evt, path);
@@ -90,22 +102,6 @@ export default class MyPlugin extends Plugin {
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
-	 // 渲染自定义标识
-	 renderCustomMarkers() {
-		const activeView = this.app.workspace.getActiveFile();
-		console.log(activeView)
-		// const fileList = document.querySelectorAll('.tree-item-inner.nav-file-title-content');
-        // fileList.forEach((file) => {
-        //     // const filePath = file.getAttribute('data-file-path');
-		// 	file.innerHTML = `<span class="custom-marker">hello</span> ${file.textContent}`;
-
-        //     // const obsidianFile = this.app.metadataCache.getFirstLinkpathDest(filePath, '');
-        //     // if (obsidianFile && obsidianFile.frontmatter && obsidianFile.frontmatter['marker']) {
-        //     //     const marker = obsidianFile.frontmatter['marker'];
-        //     //     file.innerHTML = `<span class="custom-marker">${marker}</span> ${file.textContent}`;
-        //     // }
-        // });
-    }
 	onunload() {
 
 	}
